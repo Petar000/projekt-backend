@@ -15,10 +15,42 @@ app.use((req, res, next) => {
 
 connectToDB()
 
-  app.get('/fullbody', async (req, res) => {
+app.post('/odgovori', (req, res) => {
+  const objekt = req.body;
+  const collection = client.db("projekt").collection('odgovorinapitanja');
+  
+  collection.findOneAndUpdate(
+    { prviOdgovor: { $exists: true } },
+    { $set: objekt }, // Ažuriramo ga s novim objektom
+    { upsert: true } // ako ne postoji dokument s tim svojstvom, stvorit će se novi
+  )
+  .then(result => {
+    console.log('Dokument uspješno ažuriran ili stvoren');
+    res.status(200).json({ message: 'Objekt uspješno spremljen.'});
+  })
+  .catch(err => {
+    console.log('Greška prilikom ažuriranja ili spremanja dokumenta:', err);
+    // Vraćanje odgovora s http statusom 500 u slučaju greške
+    res.status(500).json({ message: 'Došlo je do pogreške prilikom spremanja objekta.'});
+  });
+});
+;
+  app.get('/odgovori', async (req,res) => {
+    try {
+      const collection = client.db("projekt").collection('odgovorinapitanja');
+      const cursor = collection.find();
+      const result = await cursor.toArray();
+      res.status(200).json(result);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Error fetching data from database');
+    }
+  });
+
+  app.get('/fullbody1', async (req, res) => {
     try {
       const db = client.db("projekt");
-      const collection = db.collection("fullbody");
+      const collection = db.collection("fullbody1");
       const cursor = collection.find();
       const result = await cursor.toArray();
       res.status(200).json(result);
@@ -116,6 +148,19 @@ connectToDB()
     } catch (error) {
       console.error(error);
       res.status(500).send('Error fetching data from database');
+    }
+  });
+
+  app.get('/nesto', async (req, res) => {
+    try {
+      const db = client.db("projekt");
+      const collection = db.collection("nesto");
+      const cursor = collection.find();
+      const result = await cursor.toArray();
+      res.status(200).json(result);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Error fetchning data from database');
     }
   });
 
