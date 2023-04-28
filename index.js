@@ -4,6 +4,8 @@ const app = express();
 const cors = require('cors');
 app.use(cors());
 
+app.use(express.json({ strict: false }));
+
 const { client, connectToDB } = require('./db');
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
@@ -35,6 +37,25 @@ app.post('/odgovori', (req, res) => {
   });
 });
 ;
+
+app.post('/mjere', (req, res) => {
+  const rezultati = req.body;
+  const collection = client.db("projekt").collection('napredak');
+
+  collection.replaceOne({}, {rezultati}, { upsert:true })
+
+  .then(result => {
+    console.log('Dokument uspješno ažuriran ili stvoren');
+    res.status(200).json({ message: 'Objekt uspješno spremljen.'});
+  })
+  .catch(err => {
+    console.log('Greška prilikom ažuriranja ili spremanja dokumenta:', err);
+    // Vraćanje odgovora s http statusom 500 u slučaju greške
+    res.status(500).json({ message: 'Došlo je do pogreške prilikom spremanja objekta.'});
+  });
+});
+;
+
   app.get('/odgovori', async (req,res) => {
     try {
       const collection = client.db("projekt").collection('odgovorinapitanja');
@@ -46,6 +67,20 @@ app.post('/odgovori', (req, res) => {
       res.status(500).send('Error fetching data from database');
     }
   });
+
+  app.get('/mjere', (req, res) => {
+    const collection = client.db("projekt").collection('napredak');
+    
+    collection.find().toArray()
+    .then(results => {
+      res.status(200).json(results);
+    })
+    .catch(error => {
+      console.error(error)
+      res.status(500).json({ message: 'Došlo je do pogreške prilikom dohvaćanja podataka.'});
+    });
+  });
+  
 
   app.get('/fullbody1', async (req, res) => {
     try {
