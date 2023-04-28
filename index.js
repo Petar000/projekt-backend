@@ -56,6 +56,18 @@ app.post('/mjere', (req, res) => {
 });
 ;
 
+app.delete("/izbrisisve", (req, res) => {
+  const collection = client.db("projekt").collection('napredak');
+  collection.deleteMany()
+  .then(result => {
+    res.status(200).send('Podaci uspješno obrisani');
+  })
+  .catch(error => {
+    console.error(error);
+    res.status(500).send('Greška prilikom brisanja podataka');
+  });
+});
+
   app.get('/odgovori', async (req,res) => {
     try {
       const collection = client.db("projekt").collection('odgovorinapitanja');
