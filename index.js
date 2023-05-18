@@ -198,19 +198,6 @@ app.delete("/izbrisisve", (req, res) => {
     }
   });
 
-  app.get('/nesto', async (req, res) => {
-    try {
-      const db = client.db("projekt");
-      const collection = db.collection("nesto");
-      const cursor = collection.find();
-      const result = await cursor.toArray();
-      res.status(200).json(result);
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Error fetchning data from database');
-    }
-  });
-
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Server started on port ${port}`);
