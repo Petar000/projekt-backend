@@ -1,4 +1,4 @@
-# Backend
+# Backend learntotrain aplikacije
 
 ## Opis
 
@@ -6,16 +6,22 @@ Ovo je backend dio projekta koji sadrži rute potrebne za learntotrain aplikacij
 
 ## Pokretanje
 
-1. **Instalacija**
+1. **Kloniranje repozitorija**
 
-   Prije pokretanja backend servera, potrebno je instalirati potrebne ovisnosti. Otvori terminal i izvrši sljedeću naredbu:
+Kako biste klonirali ovaj repozitorij na svoje računalo, otvorite terminal ili neki drugi naredbeni redak, navigirajte do direktorija u kojem želite smjestiti projekt i izvršite sljedeću naredbu:
+
+git clone https://github.com/Petar000/projekt-backend.git
+
+2. **Instalacija**
+
+   Prije pokretanja backend servera, potrebno je instalirati potrebne ovisnosti. Otvorite terminal i izvršite sljedeću naredbu:
 
 npm install
 
 
-2. **Pokretanje**
+3. **Pokretanje**
 
-Nakon uspješne instalacije paketa, možeš pokrenuti backend server. Otvori terminal i izvrši sljedeću naredbu:
+Nakon uspješne instalacije paketa, možete pokrenuti backend server. Otvorite terminal i izvršite sljedeću naredbu:
 
 node index.js
 
