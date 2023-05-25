@@ -17,26 +17,24 @@ app.use((req, res, next) => {
 
 connectToDB()
 
-app.post('/odgovori', (req, res) => {
+app.put('/odgovori', (req, res) => {
   const objekt = req.body;
   const collection = client.db("projekt").collection('odgovorinapitanja');
-  
-  collection.findOneAndUpdate(
+
+  collection.replaceOne(
     { prviOdgovor: { $exists: true } },
-    { $set: objekt }, // Ažuriramo ga s novim objektom
-    { upsert: true } // ako ne postoji dokument s tim svojstvom, stvorit će se novi
+    objekt,
+    { upsert: true }
   )
-  .then(result => {
-    console.log('Dokument uspješno ažuriran ili stvoren');
-    res.status(200).json({ message: 'Objekt uspješno spremljen.'});
-  })
-  .catch(err => {
-    console.log('Greška prilikom ažuriranja ili spremanja dokumenta:', err);
-    // Vraćanje odgovora s http statusom 500 u slučaju greške
-    res.status(500).json({ message: 'Došlo je do pogreške prilikom spremanja objekta.'});
-  });
+    .then(result => {
+      console.log('Dokument uspješno ažuriran ili stvoren');
+      res.status(200).json({ message: 'Objekt uspješno spremljen.' });
+    })
+    .catch(err => {
+      console.log('Greška prilikom ažuriranja ili spremanja dokumenta:', err);
+      res.status(500).json({ message: 'Došlo je do pogreške prilikom spremanja objekta.' });
+    });
 });
-;
 
 app.post('/mjere', (req, res) => {
   const rezultati = req.body;
