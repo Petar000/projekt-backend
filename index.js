@@ -17,42 +17,52 @@ app.use((req, res, next) => {
 
 connectToDB()
 
-app.put('/odgovori', (req, res) => {
-  const objekt = req.body;
-  const collection = client.db("projekt").collection('odgovorinapitanja');
+app.put('/odgovori', async (req, res) => {
+  try {
+    const objekt = req.body;
+    const collection = client.db("projekt").collection('odgovorinapitanja');
 
-  collection.replaceOne(
-    { prviOdgovor: { $exists: true } },
-    objekt,
-    { upsert: true }
-  )
-    .then(result => {
-      console.log('Dokument uspješno ažuriran ili stvoren');
-      res.status(200).json({ message: 'Objekt uspješno spremljen.' });
-    })
-    .catch(err => {
-      console.log('Greška prilikom ažuriranja ili spremanja dokumenta:', err);
-      res.status(500).json({ message: 'Došlo je do pogreške prilikom spremanja objekta.' });
-    });
+    await collection.replaceOne(
+      { prviOdgovor: { $exists: true } },
+      objekt,
+      { upsert: true }
+    );
+
+    console.log('Dokument uspješno ažuriran ili stvoren');
+    res.status(200).json({ message: 'Objekt uspješno spremljen.' });
+  } catch (err) {
+    console.log('Greška prilikom ažuriranja ili spremanja dokumenta:', err);
+    res.status(500).json({ message: 'Došlo je do pogreške prilikom spremanja objekta.' });
+  }
 });
 
-app.post('/mjere', (req, res) => {
-  const rezultati = req.body;
-  const collection = client.db("projekt").collection('napredak');
+app.get('/odgovori', async (req,res) => {
+  try {
+    const collection = client.db("projekt").collection('odgovorinapitanja');
+    const cursor = collection.find();
+    const result = await cursor.toArray();
+    res.status(200).json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error fetching data from database');
+  }
+});
 
-  collection.replaceOne({}, {rezultati}, { upsert:true })
+app.post('/mjere', async (req, res) => {
+  try {
+    const rezultati = req.body;
+    const collection = client.db("projekt").collection('napredak');
 
-  .then(result => {
+    const result = await collection.replaceOne({}, {rezultati}, { upsert:true });
+
     console.log('Dokument uspješno ažuriran ili stvoren');
     res.status(200).json({ message: 'Objekt uspješno spremljen.'});
-  })
-  .catch(err => {
+  } catch (err) {
     console.log('Greška prilikom ažuriranja ili spremanja dokumenta:', err);
-    // Vraćanje odgovora s http statusom 500 u slučaju greške
     res.status(500).json({ message: 'Došlo je do pogreške prilikom spremanja objekta.'});
-  });
+  }
 });
-;
+
 
 app.delete("/izbrisisve", (req, res) => {
   const collection = client.db("projekt").collection('napredak');
@@ -65,18 +75,6 @@ app.delete("/izbrisisve", (req, res) => {
     res.status(500).send('Greška prilikom brisanja podataka');
   });
 });
-
-  app.get('/odgovori', async (req,res) => {
-    try {
-      const collection = client.db("projekt").collection('odgovorinapitanja');
-      const cursor = collection.find();
-      const result = await cursor.toArray();
-      res.status(200).json(result);
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Error fetching data from database');
-    }
-  });
 
   app.get('/mjere', (req, res) => {
     const collection = client.db("projekt").collection('napredak');
@@ -101,7 +99,7 @@ app.delete("/izbrisisve", (req, res) => {
       res.status(200).json(result);
     } catch (error) {
       console.error(error);
-      res.status(500).send('Error fetching data from database');
+      res.status(500).send('Greška prilikom dohvaćanja podataka iz baze');
     }
   });
 
@@ -114,7 +112,7 @@ app.delete("/izbrisisve", (req, res) => {
       res.status(200).json(result);
     } catch (error) {
       console.error(error);
-      res.status(500).send('Error fetching data from database');
+      res.status(500).send('Greška prilikom dohvaćanja podataka iz baze');
     }
   });
 
@@ -127,7 +125,7 @@ app.delete("/izbrisisve", (req, res) => {
       res.status(200).json(result);
     } catch (error) {
       console.error(error);
-      res.status(500).send('Error fetching data from database');
+      res.status(500).send('Greška prilikom dohvaćanja podataka iz baze');
     }
   });
 
@@ -140,7 +138,7 @@ app.delete("/izbrisisve", (req, res) => {
       res.status(200).json(result);
     } catch (error) {
       console.error(error);
-      res.status(500).send('Error fetchning data from database');
+      res.status(500).send('Greška prilikom dohvaćanja podataka iz baze');
     }
   });
 
@@ -153,7 +151,7 @@ app.delete("/izbrisisve", (req, res) => {
       res.status(200).json(result);
     } catch (error) {
       console.error(error);
-      res.status(500).send('Error fetching data from database');
+      res.status(500).send('Greška prilikom dohvaćanja podataka iz baze');
     }
   });
 
@@ -166,7 +164,7 @@ app.delete("/izbrisisve", (req, res) => {
       res.status(200).json(result);
     } catch (error) {
       console.error(error);
-      res.status(500).send('Error fetching data from database');
+      res.status(500).send('Greška prilikom dohvaćanja podataka iz baze');
     }
   });
 
@@ -179,7 +177,7 @@ app.delete("/izbrisisve", (req, res) => {
       res.status(200).json(result);
     } catch (error) {
       console.error(error);
-      res.status(500).send('Error fetching data from database');
+      res.status(500).send('Greška prilikom dohvaćanja podataka iz baze');
     }
   });
 
@@ -192,7 +190,7 @@ app.delete("/izbrisisve", (req, res) => {
       res.status(200).json(result);
     } catch (error) {
       console.error(error);
-      res.status(500).send('Error fetching data from database');
+      res.status(500).send('Greška prilikom dohvaćanja podataka iz baze');
     }
   });
 
