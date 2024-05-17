@@ -47,7 +47,7 @@ app.get('/odgovori', async (req,res) => {
     res.status(500).send('Error fetching data from database');
   }
 });
-
+/*
 app.post('/mjere', async (req, res) => {
   try {
     const rezultati = req.body;
@@ -62,7 +62,28 @@ app.post('/mjere', async (req, res) => {
     res.status(500).json({ message: 'Došlo je do pogreške prilikom spremanja objekta.'});
   }
 });
+*/
+app.post('/mjere', async (req, res) => {
+  try {
+    const rezultati = req.body;
+    const collection = client.db("projekt").collection('napredak');
 
+    // Provjeri postoji li već dokument s odgovarajućim sessionId
+    const existingDocument = await collection.findOne({ 'sessionId': rezultati.sessionId });
+
+    if (!existingDocument) {
+      // Ako ne postoji, dodaj novi dokument u kolekciju
+      await collection.insertOne({ rezultati });
+      console.log('Novi dokument dodan u kolekciju');
+      res.status(200).json({ message: 'Objekt uspješno spremljen.'});
+    } else {
+      await collection.replaceOne({'sessionId': rezultati.sessionId}, {rezultati}, { upsert:true }); 
+    }
+  } catch (err) {
+    console.log('Greška prilikom spremanja dokumenta:', err);
+    res.status(500).json({ message: 'Došlo je do pogreške prilikom spremanja objekta.'});
+  }
+});
 
 app.delete("/izbrisisve", (req, res) => {
   const collection = client.db("projekt").collection('napredak');
@@ -79,7 +100,9 @@ app.delete("/izbrisisve", (req, res) => {
   app.get('/mjere', (req, res) => {
     const collection = client.db("projekt").collection('napredak');
     
-    collection.find().toArray()
+    const sessionId = req.query.sessionId; // Dobivanje sessionId iz zahtjeva
+
+    collection.find({ 'sessionId': sessionId }).toArray()
     .then(results => {
       res.status(200).json(results);
     })
