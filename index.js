@@ -97,19 +97,17 @@ app.delete("/izbrisisve", (req, res) => {
   });
 });
 
-app.post('/mjere', async (req, res) => {
-  try {
-    const rezultati = req.body;
-    const collection = client.db("projekt").collection('napredak');
-
-    const result = await collection.replaceOne({}, {rezultati}, { upsert:true });
-
-    console.log('Dokument uspješno ažuriran ili stvoren');
-    res.status(200).json({ message: 'Objekt uspješno spremljen.'});
-  } catch (err) {
-    console.log('Greška prilikom ažuriranja ili spremanja dokumenta:', err);
-    res.status(500).json({ message: 'Došlo je do pogreške prilikom spremanja objekta.'});
-  }
+app.get('/mjere', (req, res) => {
+  const collection = client.db("projekt").collection('napredak');
+  
+  collection.find().toArray()
+  .then(results => {
+    res.status(200).json(results);
+  })
+  .catch(error => {
+    console.error(error)
+    res.status(500).json({ message: 'Došlo je do pogreške prilikom dohvaćanja podataka.'});
+  });
 });
   
 
