@@ -77,7 +77,7 @@ app.post('/mjere', async (req, res) => {
       console.log('Novi dokument dodan u kolekciju');
       res.status(200).json({ message: 'Objekt uspješno spremljen.'});
     } else {
-      await collection.replaceOne({'sessionId': rezultati.sessionId}, {rezultati}, { upsert:true }); 
+      await collection.replaceOne({'rezultati.sessionId': rezultati.sessionId}, {rezultati}, { upsert:true }); 
     }
   } catch (err) {
     console.log('Greška prilikom spremanja dokumenta:', err);
@@ -87,7 +87,7 @@ app.post('/mjere', async (req, res) => {
 
 app.delete("/izbrisisve", (req, res) => {
   const collection = client.db("projekt").collection('napredak');
-  collection.deleteMany()
+  collection.deleteOne()
   .then(result => {
     res.status(200).send('Podaci uspješno obrisani');
   })
