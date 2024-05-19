@@ -97,23 +97,20 @@ app.delete("/izbrisisve", (req, res) => {
   });
 });
 
-  app.get('/mjere', (req, res) => {
-    console.log('Incoming request with sessionId:', req.query.sessionId); // Provjera je li sessionId ispravno dohvaćen
+app.post('/mjere', async (req, res) => {
+  try {
+    const rezultati = req.body;
     const collection = client.db("projekt").collection('napredak');
-    
-    const sessionId = req.query.sessionId; // Dobivanje sessionId iz zahtjeva
 
-    console.log('Searching for sessionId:', sessionId); // Provjera sessionId prije upita
-    collection.find({ 'sessionId': sessionId }).toArray()
-    .then(results => {
-      console.log('Results:', results); // Provjera rezultata pretraživanja
-      res.status(200).json(results);
-    })
-    .catch(error => {
-      console.error(error)
-      res.status(500).json({ message: 'Došlo je do pogreške prilikom dohvaćanja podataka.'});
-    });
-  });
+    const result = await collection.replaceOne({}, {rezultati}, { upsert:true });
+
+    console.log('Dokument uspješno ažuriran ili stvoren');
+    res.status(200).json({ message: 'Objekt uspješno spremljen.'});
+  } catch (err) {
+    console.log('Greška prilikom ažuriranja ili spremanja dokumenta:', err);
+    res.status(500).json({ message: 'Došlo je do pogreške prilikom spremanja objekta.'});
+  }
+});
   
 
   app.get('/fullbody1', async (req, res) => {
