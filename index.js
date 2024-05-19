@@ -83,18 +83,22 @@ app.delete("/izbrisisve", (req, res) => {
 });
 
 app.get('/mjere', (req, res) => {
+  const sessionId = req.query.sessionId; // Dohvati sessionId iz zahtjeva
+
   const collection = client.db("projekt").collection('napredak');
   
-  collection.find().toArray()
-  .then(results => {
-    res.status(200).json(results);
-  })
-  .catch(error => {
-    console.error(error)
-    res.status(500).json({ message: 'Došlo je do pogreške prilikom dohvaćanja podataka.'});
-  });
+  collection.findOne({ 'rezultati.sessionId': sessionId })
+    .then(result => {
+      if (!result) {
+        return res.status(404).json({ message: 'Nema podataka za zadani sessionId.' });
+      }
+      res.status(200).json(result);
+    })
+    .catch(error => {
+      console.error(error);
+      res.status(500).json({ message: 'Došlo je do pogreške prilikom dohvaćanja podataka.' });
+    });
 });
-  
 
   app.get('/fullbody1', async (req, res) => {
     try {
