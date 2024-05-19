@@ -36,7 +36,7 @@ app.put('/odgovori', async (req, res) => {
   }
 });
 
-app.get('/odgovori', async (req,res) => {
+app.get('/odgovori', async (req, res) => {
   try {
     const collection = client.db("projekt").collection('odgovorinapitanja');
     const cursor = collection.find();
@@ -60,37 +60,42 @@ app.post('/mjere', async (req, res) => {
       // Ako ne postoji, dodaj novi dokument u kolekciju
       await collection.insertOne({ rezultati });
       console.log('Novi dokument dodan u kolekciju');
-      res.status(200).json({ message: 'Objekt uspješno spremljen.'});
+      res.status(200).json({ message: 'Objekt uspješno spremljen.' });
     } else {
-      await collection.replaceOne({'rezultati.sessionId': rezultati.sessionId}, {rezultati}, { upsert:true }); 
+      await collection.replaceOne({ 'rezultati.sessionId': rezultati.sessionId }, { rezultati }, { upsert: true });
     }
   } catch (err) {
     console.log('Greška prilikom spremanja dokumenta:', err);
-    res.status(500).json({ message: 'Došlo je do pogreške prilikom spremanja objekta.'});
+    res.status(500).json({ message: 'Došlo je do pogreške prilikom spremanja objekta.' });
   }
 });
 
 app.delete("/izbrisisve", (req, res) => {
+  const sessionId = req.query.sessionId;
+
   const collection = client.db("projekt").collection('napredak');
-  collection.deleteOne()
-  .then(result => {
-    res.status(200).send('Podaci uspješno obrisani');
-  })
-  .catch(error => {
-    console.error(error);
-    res.status(500).send('Greška prilikom brisanja podataka');
-  });
+  collection.deleteOne({ 'rezultati.sessionId': sessionId })
+    .then(result => {
+      if (!result) {
+        return res.status(404).json({ message: 'Nema podataka za izbrisati.' })
+      }
+      res.status(200).send('Podaci uspješno obrisani');
+    })
+    .catch(error => {
+      console.error(error);
+      res.status(500).send('Greška prilikom brisanja podataka');
+    });
 });
 
 app.get('/mjere', (req, res) => {
   const sessionId = req.query.sessionId; // Dohvati sessionId iz zahtjeva
 
   const collection = client.db("projekt").collection('napredak');
-  
+
   collection.findOne({ 'rezultati.sessionId': sessionId })
     .then(result => {
       if (!result) {
-        return res.status(404).json({ message: 'Nema podataka za zadani sessionId.' });
+        return res.status(404).json({ message: 'Još nema podataka za zadani sessionId.' });
       }
       res.status(200).json(result);
     })
@@ -100,109 +105,109 @@ app.get('/mjere', (req, res) => {
     });
 });
 
-  app.get('/fullbody1', async (req, res) => {
-    try {
-      const db = client.db("projekt");
-      const collection = db.collection("fullbody1");
-      const cursor = collection.find();
-      const result = await cursor.toArray();
-      res.status(200).json(result);
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Greška prilikom dohvaćanja podataka iz baze');
-    }
-  });
+app.get('/fullbody1', async (req, res) => {
+  try {
+    const db = client.db("projekt");
+    const collection = db.collection("fullbody1");
+    const cursor = collection.find();
+    const result = await cursor.toArray();
+    res.status(200).json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Greška prilikom dohvaćanja podataka iz baze');
+  }
+});
 
-  app.get('/fullbody2', async (req, res) => {
-    try {
-      const db = client.db("projekt");
-      const collection = db.collection("fullbody2");
-      const cursor = collection.find();
-      const result = await cursor.toArray();
-      res.status(200).json(result);
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Greška prilikom dohvaćanja podataka iz baze');
-    }
-  });
+app.get('/fullbody2', async (req, res) => {
+  try {
+    const db = client.db("projekt");
+    const collection = db.collection("fullbody2");
+    const cursor = collection.find();
+    const result = await cursor.toArray();
+    res.status(200).json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Greška prilikom dohvaćanja podataka iz baze');
+  }
+});
 
-  app.get('/lowerbody', async (req, res) => {
-    try {
-      const db = client.db("projekt");
-      const collection = db.collection("lowerbody");
-      const cursor = collection.find();
-      const result = await cursor.toArray();
-      res.status(200).json(result);
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Greška prilikom dohvaćanja podataka iz baze');
-    }
-  });
+app.get('/lowerbody', async (req, res) => {
+  try {
+    const db = client.db("projekt");
+    const collection = db.collection("lowerbody");
+    const cursor = collection.find();
+    const result = await cursor.toArray();
+    res.status(200).json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Greška prilikom dohvaćanja podataka iz baze');
+  }
+});
 
-  app.get('/lowerbody-visedonji', async (req, res) => {
-    try {
-      const db = client.db("projekt");
-      const collection = db.collection("lowerbody-visedonji");
-      const cursor = collection.find();
-      const result = await cursor.toArray();
-      res.status(200).json(result);
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Greška prilikom dohvaćanja podataka iz baze');
-    }
-  });
+app.get('/lowerbody-visedonji', async (req, res) => {
+  try {
+    const db = client.db("projekt");
+    const collection = db.collection("lowerbody-visedonji");
+    const cursor = collection.find();
+    const result = await cursor.toArray();
+    res.status(200).json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Greška prilikom dohvaćanja podataka iz baze');
+  }
+});
 
-  app.get('/lowerbody-visegornji', async (req, res) => {
-    try {
-      const db = client.db("projekt");
-      const collection = db.collection("lowerbody-visegornji");
-      const cursor = collection.find();
-      const result = await cursor.toArray();
-      res.status(200).json(result);
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Greška prilikom dohvaćanja podataka iz baze');
-    }
-  });
+app.get('/lowerbody-visegornji', async (req, res) => {
+  try {
+    const db = client.db("projekt");
+    const collection = db.collection("lowerbody-visegornji");
+    const cursor = collection.find();
+    const result = await cursor.toArray();
+    res.status(200).json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Greška prilikom dohvaćanja podataka iz baze');
+  }
+});
 
-  app.get('/upperbody', async (req, res) => {
-    try {
-      const db = client.db("projekt");
-      const collection = db.collection("upperbody");
-      const cursor = collection.find();
-      const result = await cursor.toArray();
-      res.status(200).json(result);
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Greška prilikom dohvaćanja podataka iz baze');
-    }
-  });
+app.get('/upperbody', async (req, res) => {
+  try {
+    const db = client.db("projekt");
+    const collection = db.collection("upperbody");
+    const cursor = collection.find();
+    const result = await cursor.toArray();
+    res.status(200).json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Greška prilikom dohvaćanja podataka iz baze');
+  }
+});
 
-  app.get('/upperbody-visegornji', async (req, res) => {
-    try {
-      const db = client.db("projekt");
-      const collection = db.collection("upperbody-visegornji");
-      const cursor = collection.find();
-      const result = await cursor.toArray();
-      res.status(200).json(result);
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Greška prilikom dohvaćanja podataka iz baze');
-    }
-  });
+app.get('/upperbody-visegornji', async (req, res) => {
+  try {
+    const db = client.db("projekt");
+    const collection = db.collection("upperbody-visegornji");
+    const cursor = collection.find();
+    const result = await cursor.toArray();
+    res.status(200).json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Greška prilikom dohvaćanja podataka iz baze');
+  }
+});
 
-  app.get('/upperbody-visedonji', async (req, res) => {
-    try {
-      const db = client.db("projekt");
-      const collection = db.collection("upperbody-visedonji");
-      const cursor = collection.find();
-      const result = await cursor.toArray();
-      res.status(200).json(result);
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Greška prilikom dohvaćanja podataka iz baze');
-    }
-  });
+app.get('/upperbody-visedonji', async (req, res) => {
+  try {
+    const db = client.db("projekt");
+    const collection = db.collection("upperbody-visedonji");
+    const cursor = collection.find();
+    const result = await cursor.toArray();
+    res.status(200).json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Greška prilikom dohvaćanja podataka iz baze');
+  }
+});
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
