@@ -69,7 +69,7 @@ app.post('/mjere', async (req, res) => {
     const collection = client.db("projekt").collection('napredak');
 
     // Provjeri postoji li već dokument s odgovarajućim sessionId
-    const existingDocument = await collection.findOne({ 'sessionId': rezultati.sessionId });
+    const existingDocument = await collection.findOne({ 'rezultati.sessionId': rezultati.sessionId }); // ode je greska ne nalazi
 
     if (!existingDocument) {
       // Ako ne postoji, dodaj novi dokument u kolekciju
