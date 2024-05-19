@@ -76,7 +76,7 @@ app.delete("/izbrisisve", (req, res) => {
   const collection = client.db("projekt").collection('napredak');
   collection.deleteOne({ 'rezultati.sessionId': sessionId })
     .then(result => {
-      if (!result) {
+      if (result.deletedCount === 0) {
         return res.status(404).json({ message: 'Nema podataka za izbrisati.' })
       }
       res.status(200).send('Podaci uspješno obrisani');
