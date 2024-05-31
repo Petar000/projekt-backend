@@ -53,8 +53,8 @@ app.post('/mjere', async (req, res) => {
     const rezultati = req.body;
     const collection = client.db("projekt").collection('napredak');
 
-    // Provjeri postoji li već dokument s odgovarajućim sessionId
-    const existingDocument = await collection.findOne({ 'rezultati.sessionId': rezultati.sessionId }); // ode je greska ne nalazi
+    // Provjeri postoji li već dokument s odgovarajućim korisnikom
+    const existingDocument = await collection.findOne({ 'rezultati.user': rezultati.user }); // ode je greska ne nalazi
 
     if (!existingDocument) {
       // Ako ne postoji, dodaj novi dokument u kolekciju
@@ -62,7 +62,7 @@ app.post('/mjere', async (req, res) => {
       console.log('Novi dokument dodan u kolekciju');
       res.status(200).json({ message: 'Objekt uspješno spremljen.' });
     } else {
-      await collection.replaceOne({ 'rezultati.sessionId': rezultati.sessionId }, { rezultati }, { upsert: true });
+      await collection.replaceOne({ 'rezultati.user': rezultati.user }, { rezultati }, { upsert: true });
     }
   } catch (err) {
     console.log('Greška prilikom spremanja dokumenta:', err);
@@ -71,10 +71,10 @@ app.post('/mjere', async (req, res) => {
 });
 
 app.delete("/izbrisisve", (req, res) => {
-  const sessionId = req.query.sessionId;
+  const user = req.query.user;
 
   const collection = client.db("projekt").collection('napredak');
-  collection.deleteOne({ 'rezultati.sessionId': sessionId })
+  collection.deleteOne({ 'rezultati.user': user })
     .then(result => {
       if (result.deletedCount === 0) {
         return res.status(404).json({ message: 'Nema podataka za izbrisati.' })
@@ -88,14 +88,14 @@ app.delete("/izbrisisve", (req, res) => {
 });
 
 app.get('/mjere', (req, res) => {
-  const sessionId = req.query.sessionId; // Dohvati sessionId iz zahtjeva
+  const user = req.query.user; // Dohvati usera iz zahtjeva
 
   const collection = client.db("projekt").collection('napredak');
 
-  collection.findOne({ 'rezultati.sessionId': sessionId })
+  collection.findOne({ 'rezultati.user': user })
     .then(result => {
       if (!result) {
-        return res.status(404).json({ message: 'Još nema podataka za zadani sessionId.' });
+        return res.status(404).json({ message: 'Još nema podataka za zadanog korisnika.' });
       }
       res.status(200).json(result);
     })
