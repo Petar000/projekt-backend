@@ -209,6 +209,45 @@ app.get('/upperbody-visedonji', async (req, res) => {
   }
 });
 
+app.get('/fullbody-kuci', async (req, res) => {
+  try {
+    const db = client.db("projekt");
+    const collection = db.collection("fullbody-kuci");
+    const cursor = collection.find();
+    const result = await cursor.toArray();
+    res.status(200).json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Greška prilikom dohvaćanja podataka iz baze');
+  }
+});
+
+app.get('/lowerbody-kuci', async (req, res) => {
+  try {
+    const db = client.db("projekt");
+    const collection = db.collection("lowerbody-kuci");
+    const cursor = collection.find();
+    const result = await cursor.toArray();
+    res.status(200).json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Greška prilikom dohvaćanja podataka iz baze');
+  }
+});
+
+app.get('/upperbody-kuci', async (req, res) => {
+  try {
+    const db = client.db("projekt");
+    const collection = db.collection("upperbody-kuci");
+    const cursor = collection.find();
+    const result = await cursor.toArray();
+    res.status(200).json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Greška prilikom dohvaćanja podataka iz baze');
+  }
+});
+
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Server started on port ${port}`);
